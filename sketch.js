@@ -1,143 +1,67 @@
-var path,boy,cash,diamonds,jwellery,sword;
-var pathImg,boyImg,cashImg,diamondsImg,jwelleryImg,swordImg;
-var treasureCollection = 0;
-var cashG,diamondsG,jwelleryG,swordGroup;
-var PLAY=1;
-var END=0;
-var gameState=1;
-var treasureCollection;
+var starImg, fairyImg, bgImg;
+var fairy , fairyVoice;
+var star, starBody;
 
-function preload(){
-  pathImg = loadImage("Road.png");
-  boyImg = loadAnimation("runner1.png","runner2.png");
-  cashImg = loadImage("cash.png");
-  diamondsImg = loadImage("diamonds.png");
-  jwelleryImg = loadImage("jwell.png");
-  swordImg = loadImage("sword.png");
-  endImg =loadImage("gameOver.png");
-}
+const Engine = Matter.Engine;
+const World = Matter.World;
+const Bodies = Matter.Bodies;
+const Body = Matter.Body;
 
-function setup(){
-  
-  createCanvas(400,400);
-// Moving background
-path=createSprite(200,200);
-path.addImage(pathImg);
-path.velocityY = 4;
-
-
-//creating boy running
-boy = createSprite(70,330,20,20);
-boy.addAnimation("SahilRunning",boyImg);
-boy.scale=0.08;
-  
-  
-cashG=new Group();
-diamondsG=new Group();
-jwelleryG=new Group();
-swordGroup=new Group();
+function preload()
+{
+	starImg = loadImage("images/star.png");
+	fairyImg = loadAnimation("images/fairyImage1.png","images/fairyImage2.png");
+	bgImg = loadImage("images/starNight.png");
+	fairyVoice = loadSound("sound/JoyMusic.mp3");
 
 }
+
+function setup() {
+	createCanvas(800, 750);
+
+	// fairyVoice.play();
+
+	fairy = createSprite(130, 520);
+	fairy.addAnimation("fairyflying",fairyImg);  
+	fairy.scale =0.25;
+
+	star = createSprite(650,30);
+	star.addImage(starImg);
+	star.scale = 0.2;
+
+	engine = Engine.create();
+	world = engine.world;
+
+	starBody = Bodies.circle(650 , 30 , 5 , {restitution:0.5, isStatic:true});
+	World.add(world, starBody);
+	
+	Engine.run(engine);
+
+}
+
 
 function draw() {
+  background(bgImg);
+  star.y= starBody.position.y;
+  star.x= starBody.position.x;
 
-  background(0);
-  boy.x = World.mouseX;
-  
-  edges= createEdgeSprites();
-  boy.collide(edges);
-  
-  //code to reset the background
-  if(path.y > 400 ){
-    path.y = height/2;
-  }
-  
-    createCash();
-    createDiamonds();
-    createJwellery();
-    createSword();
-  
-  if(gameState==END){
-    cashG.destroyEach();
-    diamondsG.destroyEach();
-    swordGroup.destroyEach();
-    jwelleryG.destroyEach();
-    cashG.setVelocityYEach(0);
-    diamondsG.setVelocityYEach(0);
-    swordGroup.setVelocityYEach(0);
-    jwelleryG.setVelocityYEach(0);
-    
-    
-  }
-
-    if (cashG.isTouching(boy)) {
-      cashG.destroyEach();
-      treasureCollection=treasureCollection+50;
-      
-    }
-    else if (diamondsG.isTouching(boy)) {
-      diamondsG.destroyEach();
-      treasureCollection=treasureCollection+100;
-      
-    }else if(jwelleryG.isTouching(boy)) {
-      jwelleryG.destroyEach();
-      treasureCollection=treasureCollection+100;
-    }else{
-      if(swordGroup.isTouching(boy)) {
-        swordGroup.destroyEach();
-        gameState=END;
-        boy.addAnimation("SahilRunning",endImg);
-        
-    }
-  }
+if (keyDown("rightArrow")){
+	fairy.velocityX= 2;
+}
+if( keyDown("leftArrow")){
+	fairy.velocityX=-2;
+}
+if(keyDown("downArrow")){
+	starBody= Bodies.circles(650,30,5,{restitution:0.5, isStatic:false});
+}
+if(starBody.position.y>450){
+	starBody= Bodies.circles(650,30,5,{restitution:0.5, isStatic:fasle});
+}
 
   drawSprites();
-  textSize(20);
-  fill(255);
-  text("Treasure: "+ treasureCollection,150,30);
 
 }
 
-function createCash() {
-  if (World.frameCount % 50 == 0) {
-  var cash = createSprite(Math.round(random(50, 350),40, 10, 10));
-  cash.addImage(cashImg);
-  cash.scale=0.12;
-  cash.velocityY = 3;
-  cash.lifetime = 150;
-  cashG.add(cash);
-  }
-}
-
-function createDiamonds() {
-  if (World.frameCount % 80 == 0) {
-  var diamonds = createSprite(Math.round(random(50, 350),40, 10, 10));
-  diamonds.addImage(diamondsImg);
-  diamonds.scale=0.03;
-  diamonds.velocityY = 3;
-  diamonds.lifetime = 150;
-  diamondsG.add(diamonds);
-}
-}
-
-function createJwellery() {
-  if (World.frameCount % 80 == 0) {
-  var jwellery = createSprite(Math.round(random(50, 350),40, 10, 10));
-  jwellery.addImage(jwelleryImg);
-  jwellery.scale=0.13;
-  jwellery.velocityY = 3;
-  jwellery.lifetime = 150;
-  jwelleryG.add(jwellery);
-  }
-}
-
-function createSword(){
-  if (World.frameCount % 150 == 0) {
-  var sword = createSprite(Math.round(random(50, 350),40, 10, 10));
-  sword.addImage(swordImg);
-  sword.scale=0.1;
-  sword.velocityY = 3;
-  sword.lifetime = 150;
-  swordGroup.add(sword);
-  }
+function keyPressed() {
+	//write code here
 }
